@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Sanctuarium</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Bangers&family=Patrick+Hand&display=swap" rel="stylesheet">
+    <style>
+        :root { --primary: #990000; --text: #f8fafc; }
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+        /* --- ARRIÈRE-PLAN PANORAMIQUE --- */
+        #bg-panorama {
+            position: fixed; top: 0; left: 0;
+            width: 300vw; height: 100vh;
+            background: url("arriereplan.jpg") no-repeat center center;
+            background-size: cover;
+            z-index: -1;
+            transition: transform 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.1);
+        }
+
+        body { 
+            font-family: 'Patrick Hand', cursive; color: var(--text); 
+            min-height: 100vh; display: flex; justify-content: center;
+            background: #000; margin: 0; overflow-x: hidden;
+        }
+
+        /* --- ADAPTATION TAILLE PC (75%) vs MOBILE (100%) --- */
+        .app-container {
+            width: 100%; /* Mobile */
+            max-width: 100%;
+            padding: calc(20px + env(safe-area-inset-top)) 15px 140px 15px;
+            position: relative;
+            background: rgba(0, 0, 0, 0.5); /* Filtre pour lisibilité */
+            min-height: 100vh;
+        }
+
+        @media (min-width: 1024px) {
+            .app-container {
+                width: 75%; /* PC */
+                border-left: 1px solid rgba(153, 0, 0, 0.3);
+                border-right: 1px solid rgba(153, 0, 0, 0.3);
+            }
+            #bg-panorama {
+                width: 225vw; /* Ajusté pour les 75% du PC */
+            }
+        }
+
+        /* --- BOUTON + AVEC bouton.gif --- */
+        .btn-add-special {
+            width: 45px; height: 38px; border: 1px solid var(--primary); border-radius: 6px;
+            background: url("bouton.gif") no-repeat center center; 
+            background-size: cover;
+            color: white; font-family: 'Bangers'; font-size: 28px; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; text-shadow: 2px 2px 0 #000;
+        }
+
+        /* --- BOUTON ÉCRIS AVEC TON SANG (ecrit.gif) --- */
+        .btn-sang {
+            color: white; border: 2px solid #990000; padding: 12px; border-radius: 10px; 
+            font-family: 'Cinzel', serif; font-size: 11px; cursor: pointer;
+            position: relative; overflow: hidden; background: #000;
+        }
+        .btn-sang::after {
+            content: ''; position: absolute; inset: 0;
+            background: url("ecrit.gif") no-repeat center center;
+            background-size: cover; opacity: 0.8; mix-blend-mode: screen;
+        }
+        .btn-sang span { position: relative; z-index: 5; }
+
+        /* --- SWIPE SYSTEM --- */
+        #swipe-track { 
+            display: flex; width: 300%; 
+            transition: transform 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.1); 
+        }
+        .view-pane { width: 33.33%; padding: 0 5px; }
+
+        /* --- NAVIGATION --- */
+        .nav-bar { 
+            position: fixed; bottom: 0; width: 100%; max-width: inherit;
+            background: rgba(0,0,0,0.9); border-top: 2px solid var(--primary); 
+            padding: 15px; display: flex; justify-content: space-around; z-index: 100; 
+        }
+        .nav-btn { background: none; border: none; color: #555; font-family: 'Bangers'; font-size: 20px; }
+        .nav-btn.active { color: var(--primary); text-shadow: 0 0 10px var(--primary); }
+
+        /* ... Styles des cartes identiques à l'original ... */
+        .cat-card { background: rgba(15, 23, 42, 0.6); border-radius: 15px; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 15px; backdrop-filter: blur(5px); }
+        .cat-header { padding: 10px; font-family: 'Cinzel'; color: var(--primary); display: flex; justify-content: space-between; }
+    </style>
+</head>
+<body>
+    <div id="bg-panorama"></div>
+
+    <div class="app-container">
+        <div style="text-align: center; margin-bottom: 20px;">
+            <h1 style="font-family: 'Cinzel'; color: var(--primary); letter-spacing: 4px;">SANCTUARIUM</h1>
+        </div>
+
+        <button class="btn btn-sang" style="width: 100%; margin-bottom: 20px;" onclick="save()">
+            <span>Écris avec ton sang</span>
+        </button>
+
+        <div id="swipe-track">
+            <div class="view-pane">
+                <div class="cat-card">
+                    <div class="cat-header"><span>CHARGES FIXES</span></div>
+                    <div style="display:flex; padding:10px; gap:5px;">
+                        <input type="text" placeholder="Loyer..." style="flex:2; background:rgba(0,0,0,0.3); color:white; border:1px solid #444; border-radius:5px;">
+                        <button class="btn-add-special">+</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="view-pane">
+                <div class="cat-card" style="padding: 20px; text-align: center;">
+                    <p>JOURNAL DES DÉPENSES</p>
+                </div>
+            </div>
+
+            <div class="view-pane">
+                <div class="cat-card">
+                    <div class="cat-header"><span>VARIABLES</span></div>
+                    <div style="display:flex; padding:10px; gap:5px;">
+                        <input type="text" placeholder="Courses..." style="flex:2; background:rgba(0,0,0,0.3); color:white; border:1px solid #444; border-radius:5px;">
+                        <button class="btn-add-special">+</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <nav class="nav-bar">
+            <button class="nav-btn" onclick="nav(0)">FIXES</button>
+            <button class="nav-btn active" onclick="nav(1)">JOURNAL</button>
+            <button class="nav-btn" onclick="nav(2)">VARIABLES</button>
+        </nav>
+    </div>
+
+    <script>
+        function nav(idx) {
+            const track = document.getElementById('swipe-track');
+            const bg = document.getElementById('bg-panorama');
+            const shift = idx * -33.33;
+            
+            track.style.transform = `translateX(${shift}%)`;
+            // Le fond bouge en synchronisation
+            bg.style.transform = `translateX(${idx * -100}vw)`;
+            
+            document.querySelectorAll('.nav-btn').forEach((btn, i) => {
+                btn.classList.toggle('active', i === idx);
+            });
+        }
+        // Initialisation au centre (Journal)
+        window.onload = () => nav(1);
+    </script>
+</body>
+</html>
